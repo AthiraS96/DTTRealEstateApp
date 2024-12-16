@@ -1,9 +1,10 @@
 import 'package:dtt_real_estate/screens/AboutPage.dart';
 import 'package:dtt_real_estate/screens/Homepage.dart';
-import 'package:dtt_real_estate/screens/Wishlist.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+//Class used to display Bottom navigation bar on the Home page and Details page
 class Bottomappbar extends StatefulWidget {
   const Bottomappbar({super.key});
 

@@ -1,9 +1,12 @@
 import 'package:dtt_real_estate/Items/BottomNavigation.dart';
-import 'package:dtt_real_estate/Provider/ApiProvider.dart';
+import 'package:dtt_real_estate/Items/House.dart';
+import 'package:dtt_real_estate/Items/HouseCard.dart';
+import 'package:dtt_real_estate/Items/Utils.dart';
 import 'package:dtt_real_estate/screens/Homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
+//This page displays  the search results and also display a message when search not found
 class SearchPage extends StatefulWidget {
   final String text;
   final List<House> houses;
@@ -20,9 +23,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final Utils utils = Utils();
+
   @override
   Widget build(BuildContext context) {
-    List<House> matchingHouses = findHomes(widget.houses, widget.text);
+    List<House> matchingHouses = utils.findHomes(widget.houses, widget.text);
 
     return SafeArea(
         child: Scaffold(
@@ -32,9 +37,9 @@ class _SearchPageState extends State<SearchPage> {
         backgroundColor: Color(0xFFEBEBEB),
         elevation: 0,
         automaticallyImplyLeading: false, // This removes the back arrow
-        title: Padding(
-          padding: const EdgeInsets.only(top: 40),
-          child: const Text(
+        title: const Padding(
+          padding: EdgeInsets.only(top: 40),
+          child: Text(
             'DTT REAL ESTATE',
             style: TextStyle(
                 color: Colors.black,
@@ -52,15 +57,14 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 children: [
                   Expanded(
-                    // Wrap TextField with Expanded
                     child: TextField(
                       decoration: InputDecoration(
                         fillColor: const Color.fromARGB(255, 221, 220, 220),
                         filled: true,
                         hintText: widget.text,
                         contentPadding: const EdgeInsets.all(12.0),
+                        //Close button takes you to homescreen
                         suffixIcon: IconButton(
-                            // onPressed: () => SearchPage(),
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -71,9 +75,6 @@ class _SearchPageState extends State<SearchPage> {
                             icon: const Icon(Icons.close)),
                         border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          // borderRadius: BorderRadius.all(
-                          //   Radius.circular(10),
-                          // ),
                         ),
                         enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide.none,
@@ -90,6 +91,7 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(
               height: 10,
             ),
+            //If search result is empty
             if (matchingHouses.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 90, left: 20, right: 20),
@@ -116,6 +118,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               )
             else
+              //If search items are there then display them in listview format777777
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -131,38 +134,5 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
     ));
-  }
-
-  // List<House> findHomes(searchText, houses) {
-  //   List<House> matchingHomes = [];
-
-  //   for (var house in houses) {
-  //     if (house.city.contains(searchText) || house.zip.contains(searchText)) {
-  //       matchingHomes.add(house);
-  //     }
-  //   }
-
-  //   return matchingHomes;
-  // }
-
-  List<House> findHomes(List<House> houses, String searchText) {
-    List<House> matchingHomes = [];
-
-    // Normalize the search text by removing spaces and converting to lowercase
-    String normalizedSearchText = searchText.replaceAll(' ', '').toLowerCase();
-
-    for (var house in houses) {
-      // Normalize the city and zip fields by removing spaces and converting to lowercase
-      String normalizedCity = house.city.replaceAll(' ', '').toLowerCase();
-      String normalizedZip = house.zip.replaceAll(' ', '').toLowerCase();
-
-      if (house.id.toString().contains(searchText) ||
-          normalizedCity.contains(normalizedSearchText) ||
-          normalizedZip.contains(normalizedSearchText)) {
-        matchingHomes.add(house);
-      }
-    }
-
-    return matchingHomes;
   }
 }

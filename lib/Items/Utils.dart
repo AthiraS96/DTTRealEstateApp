@@ -1,3 +1,4 @@
+import 'package:dtt_real_estate/Items/House.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Utils {
@@ -31,5 +32,41 @@ class Utils {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  Position createPosition(double latitude, double longitude) {
+    return Position(
+      latitude: latitude,
+      longitude: longitude,
+      timestamp: DateTime.now(),
+      accuracy: 0.0,
+      altitude: 0.0,
+      altitudeAccuracy: 0.0,
+      heading: 0.0,
+      speed: 0.0,
+      speedAccuracy: 0.0,
+      headingAccuracy: 0.0,
+    );
+  }
+
+  List<House> findHomes(List<House> houses, String searchText) {
+    List<House> matchingHomes = [];
+
+    // Normalize the search text by removing spaces and converting to lowercase
+    String normalizedSearchText = searchText.replaceAll(' ', '').toLowerCase();
+
+    for (var house in houses) {
+      // Normalize the city and zip fields by removing spaces and converting to lowercase
+      String normalizedCity = house.city.replaceAll(' ', '').toLowerCase();
+      String normalizedZip = house.zip.replaceAll(' ', '').toLowerCase();
+
+      if (house.id.toString().contains(searchText) ||
+          normalizedCity.contains(normalizedSearchText) ||
+          normalizedZip.contains(normalizedSearchText)) {
+        matchingHomes.add(house);
+      }
+    }
+
+    return matchingHomes;
   }
 }

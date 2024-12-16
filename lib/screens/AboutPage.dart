@@ -2,6 +2,7 @@ import 'package:dtt_real_estate/Items/BottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+//This class displays the about or information page of the app
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
 
@@ -11,7 +12,7 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   void launchURL() async {
-    Uri url = Uri.parse('https://www.d-tt.nl');
+    Uri url = Uri.parse('https://www.d-tt.nl'); //DTT Website link
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
       mode:
@@ -45,6 +46,7 @@ class _AboutPageState extends State<AboutPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            //Information about the app is displayed
             Text(app_details,
                 style: const TextStyle(
                   color: Color(0Xff66000000),
@@ -67,6 +69,8 @@ class _AboutPageState extends State<AboutPage> {
             const SizedBox(
               height: 15,
             ),
+
+            //Launcher icon display
             Row(
               crossAxisAlignment: CrossAxisAlignment.start, // Center vertically
               children: [
@@ -116,6 +120,8 @@ class _AboutPageState extends State<AboutPage> {
                         'by DTT',
                         style: TextStyle(fontSize: 12),
                       ),
+
+                      //on tap directs to the DTT Website in browser
                       GestureDetector(
                         onTap: launchURL,
                         child: const Text(
