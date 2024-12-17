@@ -1,3 +1,4 @@
+import 'package:dtt_real_estate/Items/House.dart';
 import 'package:dtt_real_estate/Provider/ApiProvider.dart';
 import 'package:sqflite/sqflite.dart';
 

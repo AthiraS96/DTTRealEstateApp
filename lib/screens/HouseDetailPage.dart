@@ -1,14 +1,14 @@
+import 'package:dtt_real_estate/Items/House.dart';
 import 'package:dtt_real_estate/Items/WishlistDB.dart';
-import 'package:dtt_real_estate/screens/Homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:dtt_real_estate/Provider/ApiProvider.dart';
 import 'package:dtt_real_estate/Items/Utils.dart';
 
+//This page displays the details of each page
 class HouseDetails extends StatefulWidget {
   final House house;
 
@@ -27,7 +27,9 @@ class _HouseDetailsState extends State<HouseDetails> {
   bool _isInWishlist = false;
 
   void initState() {
+    super.initState();
     _checkWishlistStatus();
+    // _onMapTap();
   }
 
   // Open Google Maps with directions to the house
@@ -44,6 +46,7 @@ class _HouseDetailsState extends State<HouseDetails> {
     }
   }
 
+  //Checks whether there are items on the wishlist
   Future<void> _checkWishlistStatus() async {
     List<House> wishlist = await database.getWishlist();
     setState(() {
@@ -78,129 +81,120 @@ class _HouseDetailsState extends State<HouseDetails> {
     return Scaffold(
       body: Stack(
         children: [
-          Column(
-            children: [
-              Image.network(
-                imageUrl,
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          // Transparent AppBar with Back Arrow
+          // Background Image (Static)
           Positioned(
-            top: 0,
             left: 0,
             right: 0,
-            child: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
+            top: 0,
+            child: Container(
+              width: double.maxFinite,
+              height: 350,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+
+          // App Bar Icons (Static)
+          Positioned(
+            left: 20,
+            top: 70,
+            right: 20,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                ),
-                actions: [
-                  IconButton(
-                    icon: Icon(
-                      _isInWishlist ? Icons.favorite : Icons.favorite_border,
-                      color: _isInWishlist ? Colors.red : Colors.white,
-                    ),
-                    onPressed: _toggleWishlist,
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
                   ),
-                  // IconButton(
-                  //   icon: Icon(Icons.favorite_border,
-                  //       color: Colors.white), // Wishlist icon
-                  //   onPressed: () async {
-                  //     // Handle wishlist action here
-                  //     // Map<String, dynamic> houseMap = House.toMap(widget.house);
-
-                  //     List<House> wishlist = await database.getWishlist();
-                  //     print(wishlist);
-                  //     bool exists =
-                  //         wishlist.any((house) => house.id == widget.house.id);
-
-                  //     if (!exists) {
-                  //       await database.insertHouse(widget.house);
-                  //       print("House added to wishlist");
-                  //     } else {
-                  //       print("House is already in the wishlist");
-                  //     }
-
-                  //     print("Wishlist button pressed");
-                  //   },
-                  // ),
-                ]),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isInWishlist ? Icons.favorite : Icons.favorite_border,
+                    color: _isInWishlist ? Colors.red : Colors.white,
+                  ),
+                  onPressed: _toggleWishlist,
+                ),
+              ],
+            ),
           ),
-          // Container with details and map below the image
+
+          // Scrollable Content (Below the Image)
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.4,
+            top: 300, // Position below the image
             left: 0,
             right: 0,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
+            bottom: 0, // Take up the remaining space
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "\$$price",
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+              child: Container(
+                color: Colors.white,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "\$$price",
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 35),
+                            _buildIconInfoRow(context),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 35),
-                      _buildIconInfoRow(context),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    "Description",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'GothamSSm',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                        const SizedBox(height: 18),
+                        const Text(
+                          "Description",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'GothamSSm',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.house.description,
+                          style: const TextStyle(
+                            color: Color(0Xff66000000),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        const Text(
+                          "Location",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'GothamSSm',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        _buildMapWidget(), // Google Map Widget
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.house.description,
-                    style: const TextStyle(
-                        color: Color(0Xff66000000), fontSize: 14),
-                  ),
-                  const SizedBox(height: 18),
-
-                  const Text(
-                    "Location",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'GothamSSm',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildMapWidget(), // Google Map Widget
-                ],
+                ),
               ),
             ),
           ),
@@ -216,8 +210,8 @@ class _HouseDetailsState extends State<HouseDetails> {
       child: SizedBox(
         height: 200,
         child: GoogleMap(
-          // mapType: MapType.satellite,
-          // myLocationEnabled: false,
+          mapType: MapType.terrain,
+          myLocationEnabled: true,
           onMapCreated: (GoogleMapController controller) {
             mapController = controller;
           },
@@ -260,7 +254,7 @@ class _HouseDetailsState extends State<HouseDetails> {
           _buildIconText(
             context,
             'assets/Icons/ic_location.svg',
-            '${(utils.calculateDistance(userLocation, createPosition(widget.house.lattitude.toDouble(), widget.house.longitude.toDouble())) / 1000).toStringAsFixed(2)} KM',
+            '${(utils.calculateDistance(userLocation, utils.createPosition(widget.house.lattitude.toDouble(), widget.house.longitude.toDouble())) / 1000).toStringAsFixed(2)} KM',
           ),
       ],
     );
